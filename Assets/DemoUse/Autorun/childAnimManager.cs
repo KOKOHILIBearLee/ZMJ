@@ -22,6 +22,7 @@ public class childAnimManager : MonoBehaviour {
         MyEventSystem.AddListenter("Step2", Step2);
         MyEventSystem.AddListenter("Step3", Step3);
         MyEventSystem.AddListenter("Step4", Step4);
+        MyEventSystem.AddListenter("Step5", Step5);
         MyEventSystem.AddListenter("ZNCMrestart", Restart);
     }
 
@@ -31,6 +32,7 @@ public class childAnimManager : MonoBehaviour {
         MyEventSystem.RemoveListener("Step2", Step2);
         MyEventSystem.RemoveListener("Step3", Step3);
         MyEventSystem.RemoveListener("Step4", Step4);
+        MyEventSystem.RemoveListener("Step5", Step5);
         MyEventSystem.RemoveListener("ZNCMrestart", Restart);
     }
 
@@ -66,28 +68,46 @@ public class childAnimManager : MonoBehaviour {
         InitFaceGuard(new Vector2(6, 12));
     }
 
-    int m = 48;
-    int n = 43;
-    void Step4(object obj)
+    void Step5(object obj)
     {
-        //if (m+4<=56)
-        //{
-        //    PlayTele(new Vector2(m, m + 4), new float[] { 1.0f, 0.8f, 0.6f, 0.4f, 0.2f });
-        //    m++;
-        //}
-        //else
-        //{
-        //    PlayTele(new Vector2(52, 56), new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f });
-        //}
-
-        if (m<=54)
+        int curIndex = 2;
+        if (obj != null)
         {
-            PlayTele(m);
-            m++;
+            curIndex = (int)obj;
         }
 
-        FaceGuardController(n);
-        n++;
+        if (curIndex - 4 >= 0 && (curIndex - 4) % 2 == 0&& curIndex<47)
+        {
+            if (curIndex % 4 == 0)
+            {
+                fourBracket2(curIndex - 3);
+                fourBracket2(curIndex - 1);
+            }
+            else /*if ((curIndex-1) % 4 == 0)*/
+            {
+                fourBracket2(curIndex - 4);
+                fourBracket2(curIndex - 2);
+            }
+        }
+
+    }
+
+    int m = 53;
+    int n = 47;
+    void Step4(object obj)
+    {
+        if (n == 49)
+        {
+            InitUnFaceGuard(new Vector2(48, 54));
+        }
+
+        if (m <= 54)
+        {
+            FaceGuardController(n);
+            PlayTele(m);
+            m++;
+            n++;
+        }
     }
 
     void Step3(object obj)
@@ -98,33 +118,32 @@ public class childAnimManager : MonoBehaviour {
             curIndex = (int)obj;
         }
 
-        if (curIndex + 10<= maxNum)
+        if (curIndex + 9<= maxNum)
         {
-            InitFaceGuard(new Vector2(curIndex + 4, curIndex + 10));
+            InitFaceGuard(new Vector2(curIndex + 4, curIndex + 9));
         }
-
-        if (curIndex - 3>=0)
+        if (curIndex==3)
         {
-            //PlayTele(new Vector2(curIndex + 1, curIndex - 3), new float[] { 1.0f, 0.8f, 0.6f, 0.4f, 0.2f });
-            PlayTele(curIndex - 3);
+            PlayTele(new Vector2(1, 6), new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f ,1.0f});
         }
+        PlayTele(curIndex + 2);
         
-        if (curIndex - 8> 0)
+        if (curIndex - 3> 0)
         {
-            FaceGuardController(curIndex - 8);
+            FaceGuardController(curIndex - 3);
         }
 
-        if (curIndex - 11 > 0&& (curIndex - 10)%2==0&&curIndex<=46)
+        if (curIndex - 7 > 0&& (curIndex - 6)%2==0&&curIndex<=46)
         {
             if (curIndex % 4 == 0)
             {
-                fourBracket2(curIndex - 11);
-                fourBracket2(curIndex - 9);
+                fourBracket2(curIndex - 7);
+                fourBracket2(curIndex - 5);
             }
             else /*if ((curIndex - 1) % 4 == 0)*/
             {
-                fourBracket2(curIndex - 12);
-                fourBracket2(curIndex - 10);
+                fourBracket2(curIndex - 8);
+                fourBracket2(curIndex - 6);
             }
         }
 
@@ -209,6 +228,30 @@ public class childAnimManager : MonoBehaviour {
             {
                 Cutter2DHuBan(index - 1, true);
             }
+        }
+    }
+
+    void InitUnFaceGuard(Vector2 targetindex)
+    {
+        int start = (int)Mathf.Min(targetindex.x, targetindex.y);
+        int end = (int)Mathf.Max(targetindex.x, targetindex.y);
+        for (int i = start; i < end; i++)
+        {
+            GameObject child = bracketList[i].transform.Find("dizuo").gameObject;
+            childAnim childScript = child.GetComponent<childAnim>();
+            if (childScript == null)
+            {
+                childScript = child.AddComponent<childAnim>();
+            }
+            if (childScript.isFold)
+            {
+                childScript.UnfoldFaceGuard();
+                if (i < 54)
+                {
+                    Cutter2DHuBan(i, true);
+                }
+            }
+
         }
     }
 

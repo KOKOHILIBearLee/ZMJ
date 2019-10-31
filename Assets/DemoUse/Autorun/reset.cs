@@ -91,6 +91,7 @@ public class reset : MonoBehaviour {
 
     void InitZNCM()
     {
+        m_Time = 0;
         IniMineWall();
         float[] sketor = new float[54];
         for (int i = 0; i < sketor.Length; i++)
@@ -98,11 +99,11 @@ public class reset : MonoBehaviour {
             sketor[i] = 0.5f;
         }
         ZhengScripts.InitilizeSketator(new Vector2(0, 53), sketor);
-        ZhengScripts.InitilizeSketator(new Vector2(0, 16), new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.5f, 0.5f });
-        ZhuAnimation.PlayAnimation(new Vector2(0, 16), 0.1f,
-            new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0.05f, 0.1f, 0.15f, 0.2f, 0.3f, 0.4f, 0.5f, 0.5f, 0.5f }, ZhuAnimation.ZhuAnimationMode.Mode3);
+        ZhengScripts.InitilizeSketator(new Vector2(0, 17), new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.5f, 0.5f ,0.5f});
+        ZhuAnimation.PlayAnimation(new Vector2(0, 17), 0.1f,
+            new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0.05f, 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f ,0.5f}, ZhuAnimation.ZhuAnimationMode.Mode3);
 
-        curStep = typeofStep.step1;
+        curStep = typeofStep.None;
         CMJGo.transform.position = CMJGoPos;//BanChildList[2].transform.position
         curIndex = 2;
 
@@ -209,13 +210,14 @@ public class reset : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        StartCoroutine(CMJMove());
+        CMJMove();
     }
 
     public static int curIndex = 2;
     float distance;
     enum typeofStep
     {
+        None,
         step1,
         step2,
         step3,
@@ -226,19 +228,22 @@ public class reset : MonoBehaviour {
     int count = 10;
     typeofStep curStep;
     bool isFirst = true;
-    IEnumerator CMJMove()
+    float m_Time = 0;
+    void CMJMove()
     {
-        if (curStep == typeofStep.step1) //第一次割煤
+        m_Time += Time.deltaTime;
+        if (isFirst && m_Time>=3f)
         {
-            yield return new WaitForSeconds(3.0f);
-            if (isFirst)
-            {
-                leftArmAni.CrossFade("LeftArm_DH", 0f);
-                rightArmAim.CrossFade("RightArm_DH", 0f);
-                isFirst = false;
-            }
+            leftArmAni.CrossFade("LeftArm_DH", 0f);
+            rightArmAim.CrossFade("RightArm_DH", 0f);
+            isFirst = false;
+            m_Time = 0f;
+            curStep = typeofStep.step1;
+        }
 
-            yield return new WaitForSeconds(4.2f);
+        if (curStep == typeofStep.step1 && m_Time >= 4.2f) //第一次割煤
+        {
+            //yield return new WaitForSeconds(4.2f);
             if (curIndex <= 18)
             {
                 distance = (CMJGo.transform.position - BanChildList[curIndex].transform.position).magnitude;
@@ -256,7 +261,10 @@ public class reset : MonoBehaviour {
             }
             else
             {
-
+                CastTransfrom.singleton.LeftArmDown();
+                CastTransfrom.singleton.RightArmUp();
+                curStep = typeofStep.step2;
+                m_Time = 0f;
                 //割三角煤
                 ZhuAnimation.PlayAnimation(new Vector2(16, 0), 0.5f, new float[] { 0.5f }, ZhuAnimation.ZhuAnimationMode.Mode2);
                 if (Cutter2DAnimation.singleton.playing)
@@ -268,17 +276,17 @@ public class reset : MonoBehaviour {
                 }
                 leftArmAni.CrossFade("LeftArm_DHR", 0f);
                 rightArmAim.CrossFade("RightArm_DHR", 0f);
+
                 if (Cutter2DAnimation.singleton.playing)
                 {
                     CastTransfrom.singleton.CutTri();
                     CastTransfrom.singleton.ToRight();
                 }
-                curStep = typeofStep.step2;
             }
         }
-        else if (curStep == typeofStep.step2) //第二次割煤--割三角煤
+        else if (curStep == typeofStep.step2 && m_Time >= 4.2f) //第二次割煤--割三角煤
         {
-            yield return new WaitForSeconds(4.2f);
+            //yield return new WaitForSeconds(4.2f);
 
             if (curIndex >= 3)
             {
@@ -302,6 +310,8 @@ public class reset : MonoBehaviour {
             }
             else
             {
+                CastTransfrom.singleton.LeftArmUp();
+                CastTransfrom.singleton.RightArmDown();
                 if (Cutter2DAnimation.singleton.playing)
                 {
                     CastTransfrom.singleton.MiddleVisible(false);
@@ -311,18 +321,19 @@ public class reset : MonoBehaviour {
                 //割底煤
                 leftArmAni.CrossFade("LeftArm_DH", 0f);
                 rightArmAim.CrossFade("RightArm_DH", 0f);
+
                 if (Cutter2DAnimation.singleton.playing)
                 {
                     CastTransfrom.singleton.ToLeft();
                     CastTransfrom.singleton.CutDown();
                 }
                 curStep = typeofStep.step3;
-
+                m_Time = 0f;
             }
         }
-        else if (curStep == typeofStep.step3)//第三次割煤--割底煤--中部跟机
+        else if (curStep == typeofStep.step3 && m_Time >= 4.2f)//第三次割煤--割底煤--中部跟机
         {
-            yield return new WaitForSeconds(4.2f);
+            //yield return new WaitForSeconds(4.2f);
 
             if (curIndex < BanChildList.Count - 1)
             {
@@ -337,12 +348,6 @@ public class reset : MonoBehaviour {
 
                     curIndex++;
 
-                    //if (curIndex>=22 && curIndex <= 48)
-                    //{
-                    //    ZhuAnimation.PlayAnimation(new Vector2(curIndex-22, curIndex - 16), 0.1f, 
-                    //        new float[] { 1.0f,0.95f,0.85f,0.75f,0.65f,0.6f,0.55f}, ZhuAnimation.ZhuAnimationMode.Mode3);
-                    //}
-
                     //中部跟机
                     if (curIndex == 19)
                     {
@@ -353,11 +358,18 @@ public class reset : MonoBehaviour {
                             Cutter2DAnimation.singleton.StartCutter1ThirdStageAnimation();
                         }
                     }
-
-                    if (curIndex >= 26 && curIndex % 2 == 0)
+                    if (curIndex == 20 )
                     {
-                        ZhuAnimation.PlayAnimation(new Vector2(curIndex - 26, curIndex - 16), 0.1f,
-                            new float[] { 1.0f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f }, ZhuAnimation.ZhuAnimationMode.Mode3);
+                        ZhuAnimation.PlayAnimation(new Vector2(curIndex - 20, curIndex - 11), 0.1f,
+                            new float[] { 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f }, ZhuAnimation.ZhuAnimationMode.Mode3);
+                    }
+
+                    if (curIndex > 20 && curIndex % 10 == 0)
+                    {
+                        ZhuAnimation.PlayAnimation(new Vector2(curIndex - 29, curIndex - 11), 0.1f,
+                            new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f }, ZhuAnimation.ZhuAnimationMode.Mode3); //, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f
+                        //ZhuAnimation.PlayAnimation(new Vector2(curIndex - 20, curIndex - 11), 0.1f,
+                        //    new float[] { 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f }, ZhuAnimation.ZhuAnimationMode.Mode3);
                     }
 
                     MyEventSystem.DispatchEvent("Step3", curIndex);
@@ -365,27 +377,28 @@ public class reset : MonoBehaviour {
             }
             else
             {
+                CastTransfrom.singleton.LeftArmDown();
+                leftArmAni.CrossFade("LeftArm_DHR", 0f);
+
                 if (Cutter2DAnimation.singleton.playing)
                 {
                     CastTransfrom.singleton.MiddleVisible(false);
                     CastTransfrom.singleton.HintVisible(false);
                     Cutter2DAnimation.singleton.StopCutter1ThirdStageAnimation();
                 }
-                leftArmAni.CrossFade("LeftArm_DHR", 0f);
-                CastTransfrom.singleton.LeftArmDown();
                 if (Cutter2DAnimation.singleton.playing)
                 {
                     CastTransfrom.singleton.CutDown();
                     CastTransfrom.singleton.ToRight();
                 }
                 curStep = typeofStep.step4;
+                m_Time = 0f;
             }
         }
-        else if (curStep == typeofStep.step4) //第四次割煤--割底煤
+        else if (curStep == typeofStep.step4 && m_Time >= 4.2f) //第四次割煤--割底煤
         {
-            yield return new WaitForSeconds(4.2f);
 
-            if (curIndex > 37)
+            if (curIndex > 42)
             {
                 distance = (CMJGo.transform.position - BanChildList[curIndex - 1].transform.position).magnitude;
                 CMJGo.transform.Translate(-CMJGo.transform.forward * CMJSpeed * Time.deltaTime, Space.World);
@@ -401,31 +414,44 @@ public class reset : MonoBehaviour {
             }
             else
             {
-                curStep = typeofStep.step5;
+                if (Cutter2DAnimation.singleton.playing)
+                {
+                    CastTransfrom.singleton.MiddleVisible(false);
+                    CastTransfrom.singleton.HintVisible(false);
+                }
+                    curStep = typeofStep.step5;
+                m_Time = 0f;
             }
         }
-        else if (curStep == typeofStep.step5) //第五次割煤--回到待机位
+        else if (curStep == typeofStep.step5 && m_Time >= 0.5f) //第五次割煤--回到待机位
         {
-            yield return new WaitForSeconds(0.5f);
+            //yield return new WaitForSeconds(0.5f);
 
             if (curIndex < BanChildList.Count - 1)
             {
                 distance = (CMJGo.transform.position - BanChildList[curIndex].transform.position).magnitude;
                 CMJGo.transform.Translate(CMJGo.transform.forward * CMJSpeed * Time.deltaTime, Space.World);
 
+
                 //Debug.Log(distance);
                 if (distance <= 0.4f)
                 {
+                    if (curIndex == 47)
+                    {
+                        ZhuAnimation.PlayAnimation(new Vector2(31, 45), 0.1f,
+                               new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f }, ZhuAnimation.ZhuAnimationMode.Mode3);
+                    }
                     SetGroup1Particle(curIndex - 3);
                     SetGroup2Particle(curIndex - 3 + 9);
 
                     curIndex++;
+                    MyEventSystem.DispatchEvent("Step5",curIndex);
                 }
             }
             else
             {
+                m_Time = 0f;
                 MyEventSystem.DispatchEvent("ZNCMrestart");
-                //SceneManager.LoadScene("tuiliu");
             }
         }
 

@@ -57,10 +57,12 @@ public class mainUIEventHandle : MonoBehaviour
             //  cameraRig.transform.position = zncmPos.transform.position;
         }
         SetZHDT_XZCFColoder(false);
-        Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/ZNCM.tpvr,0");
+        //Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/ZNCM.tpvr,0");
         PopUI.bPop = false;
         if (SLTGameobject != null)
             SLTGameobject.SetActive(true);
+
+        SOManager.singleton.currSceneName = "ZNCM_G";
     }
 
     public static void SetZHDT_XZCFColoder(bool val)
