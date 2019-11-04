@@ -15,8 +15,8 @@ public class reset : MonoBehaviour {
     int maxNUM = 54;
     GameObject mineWall = null;
 
-    Animator leftArmAni;
-    Animator rightArmAim;
+    public Animator leftArmAni;
+    public Animator rightArmAim;
     MakeAnimation SLFather;
 
     Vector3 penwuposition = new Vector3(0, -0.0008f, 0);
@@ -27,6 +27,7 @@ public class reset : MonoBehaviour {
     List<GameObject> penwuParticleGroup1 = new List<GameObject>();
     List<GameObject> penwuParticleGroup2 = new List<GameObject>();
     // Use this for initialization
+
     void Start () {
         GameObject p = Resources.Load<GameObject>("PenWu");
         p.SetActive(false);
@@ -42,8 +43,8 @@ public class reset : MonoBehaviour {
         SLFather = GameObject.Find("SLFather").GetComponent<MakeAnimation>();
         SLFather.state = MakeAnimation.AnimationState.play;
         
-        leftArmAni = GameObject.Find("钻头机械臂001").GetComponent<Animator>();
-        rightArmAim = GameObject.Find("钻头机械臂002").GetComponent<Animator>();
+        //leftArmAni = GameObject.Find("钻头机械臂001").GetComponent<Animator>();
+        //rightArmAim = GameObject.Find("钻头机械臂002").GetComponent<Animator>();
 
         for (int i = 0; i < maxNUM; i++)
         {
@@ -62,7 +63,16 @@ public class reset : MonoBehaviour {
 
         InitZNCM();
         MyEventSystem.AddListenter("ZNCMrestart",Restart);
-        
+    }
+
+    private void OnEnable()
+    {
+        MyEventSystem.DispatchEvent("ZNCMrestart");
+    }
+
+    private void OnDisable()
+    {
+        ClearMineWall();
     }
 
     void Restart(object obj)
@@ -77,6 +87,7 @@ public class reset : MonoBehaviour {
         isFirst = true;
         InitZNCM();
         IntilizeZJParticle();
+        Cutter2DAnimation.singleton.SwitchScenceInitilize();
 
         for (int i = 0; i < maxNUM; i++)
         {
@@ -91,8 +102,14 @@ public class reset : MonoBehaviour {
 
     void InitZNCM()
     {
+        AudioAction.ExecuteScript("RemoveAudio,JieShuo.wav");
+        AudioAction.ExecuteScript("PlayAudio,caimeiji.wav,0.3,0");
+        AudioAction.ExecuteScript("PlayAudio,posuiji.wav,0.3,0");
+        AudioAction.ExecuteScript("PlayAudio,biandianzhan.wav,0.3,0");
+
         m_Time = 0;
         IniMineWall();
+        IniCutterBra();
         float[] sketor = new float[54];
         for (int i = 0; i < sketor.Length; i++)
         {
@@ -108,10 +125,6 @@ public class reset : MonoBehaviour {
         curIndex = 2;
 
         KeyFrameAnimation.SSLLJ = true;
-        if (Cutter2DAnimation.singleton != null)
-        {
-            Cutter2DAnimation.singleton.InitilizeAll(GameObject.Find("CMJ"));
-        }
 
         //斜切入刀
         CastTransfrom.singleton.InitilizeAnimation();
@@ -152,6 +165,16 @@ public class reset : MonoBehaviour {
             DestroyWall.singleton.father = mineWall;
             DestroyWall.singleton.IniFather();
         }
+    }
+
+    void IniCutterBra()
+    {
+        GameObject bra1 = leftArmAni.gameObject.transform.Find("钻头001").gameObject;
+        GameObject bra2 = rightArmAim.gameObject.transform.Find("钻头002").gameObject;
+
+        DestroyWall.singleton.cutter = new List<GameObject>();
+        DestroyWall.singleton.cutter.Add(bra1);
+        DestroyWall.singleton.cutter.Add(bra2);
     }
 
     public void IntilizeZJParticle()
@@ -239,6 +262,24 @@ public class reset : MonoBehaviour {
             isFirst = false;
             m_Time = 0f;
             curStep = typeofStep.step1;
+
+            Training.TrainingManager.ExecuteScript("SkipVRCamera,ZNCM_TZ");
+
+            MovieAction.ExecuteScript("PLayMovie,ZJ_JK,JX_ZJCZ.ogg,0");
+            MovieAction.ExecuteScript("PLayMovie,CMJ_JK,JX_CMJCZ.ogg,0");
+            MovieAction.ExecuteScript("PLayMovie,JKZX_JK,JX_JKCZ.ogg,0");
+            MovieAction.ExecuteScript("PLayMovie,ZJ_JK2,JX_ZJJK.ogg,0");
+            MovieAction.ExecuteScript("PLayMovie,CMJ_JK2,JX_CMJJK.ogg,0");
+            MovieAction.ExecuteScript("PLayMovie,JKZX_JK2,JX_JKJK.ogg,0");
+
+            AudioAction.ExecuteScript("SetAudioState,caimeiji.wav,3.2:0:-53.3,90,0.3,0");
+            AudioAction.ExecuteScript("SetAudioState,posuiji.wav,-46.77:0:-27.49,40,0.3,0");
+            AudioAction.ExecuteScript("SetAudioState,caimeiji.wav,56.5:-0.88:9.11,50,0.3,0");
+
+            if (Cutter2DAnimation.singleton != null)
+            {
+                Cutter2DAnimation.singleton.InitilizeAll(CMJGo.transform.Find("CMJ1/CMJ").gameObject);
+            }
         }
 
         if (curStep == typeofStep.step1 && m_Time >= 4.2f) //第一次割煤

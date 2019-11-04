@@ -27,7 +27,7 @@ public class Cutter2DAnimation : MonoBehaviour
     public float scalestrack = 1;
 
     float shensuobi1FirstStageAxis_Y = 11.1f;
-    float shensuobi1FirstStageScale = 1.655f;
+    float shensuobi1FirstStageScale = 1.642f;
     float shensuobi1SecondStageAxis_y = 201.1f;
     float shensuobi1SecondStageScale = 2;
 
@@ -177,7 +177,7 @@ public class Cutter2DAnimation : MonoBehaviour
         huban = new List<GameObject>();
         for (int i = 1; i < Fuzhi.mounts+2; i++)
         {
-            GameObject result = new GameObject();
+            GameObject result;
             if (SOManager.singleton.currSceneName=="ZNCM_G")
             {
                 GameObject parent = GameObject.Find("Bracket" + i);
@@ -196,7 +196,7 @@ public class Cutter2DAnimation : MonoBehaviour
         shensuobi = new List<GameObject>();
         for (int i = 1; i < Fuzhi.mounts+2; i++)
         {
-            GameObject result = new GameObject();
+            GameObject result ;
             if (SOManager.singleton.currSceneName == "ZNCM_G")
             {
                 GameObject parent = GameObject.Find("Bracket" + i);
@@ -216,7 +216,7 @@ public class Cutter2DAnimation : MonoBehaviour
         shensuobi1 = new List<GameObject>();
         for (int i = 1; i < Fuzhi.mounts+2; i++)
         {
-            GameObject result = new GameObject();
+            GameObject result;
             if (SOManager.singleton.currSceneName == "ZNCM_G")
             {
                 GameObject parent = GameObject.Find("Bracket" + i);

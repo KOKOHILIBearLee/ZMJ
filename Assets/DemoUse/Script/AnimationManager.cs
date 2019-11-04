@@ -671,7 +671,7 @@ public class AnimationManager : MonoBehaviour
     UnityEngine.UI.Image image;
     void Update()
     {
-        if (SOManager.singleton.currSceneName != "ZNCM")
+        if (SOManager.singleton.currSceneName != "ZNCM_G")
         {
             try
             {

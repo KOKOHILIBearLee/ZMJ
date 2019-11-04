@@ -21,6 +21,8 @@ public class mainUIEventHandle : MonoBehaviour
     TouchPadChangUI m_ui;
     public static mainUIEventHandle sin;
     // Use this for initialization
+    GameObject ZNCM_Root=null;
+    GameObject root;
 
     private void Awake()
     {
@@ -60,9 +62,37 @@ public class mainUIEventHandle : MonoBehaviour
         //Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/ZNCM.tpvr,0");
         PopUI.bPop = false;
         if (SLTGameobject != null)
-            SLTGameobject.SetActive(true);
+            SLTGameobject.SetActive(false);
 
         SOManager.singleton.currSceneName = "ZNCM_G";
+        if (ZNCM_Root != null)
+        {
+            ZNCM_Root.SetActive(true);
+        }
+        else
+        {
+            ZNCM_Root = Resources.Load<GameObject>("Replace");
+            ZNCM_Root = Instantiate(ZNCM_Root);
+            root = GameObject.Find("SceneRoot");
+        }
+
+        for (int i = 0; i < root.transform.childCount; i++)
+        {
+            root.transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    public void CloseZNCM()
+    {
+        if (ZNCM_Root!=null&& ZNCM_Root.activeSelf)
+        {
+            ZNCM_Root.SetActive(false);
+
+            for (int i = 0; i < root.transform.childCount; i++)
+            {
+                root.transform.GetChild(i).gameObject.SetActive(true);
+            }
+        }
     }
 
     public static void SetZHDT_XZCFColoder(bool val)
@@ -93,6 +123,8 @@ public class mainUIEventHandle : MonoBehaviour
         PopUI.bPop = true;
         if (SLTGameobject != null)
             SLTGameobject.SetActive(true);
+
+        CloseZNCM();
     }
 
     public void OnSBCK()
@@ -112,6 +144,8 @@ public class mainUIEventHandle : MonoBehaviour
         PopUI.bPop = false;
         if (SLTGameobject != null)
             SLTGameobject.SetActive(true);
+
+        CloseZNCM();
     }
 
     public void OnXJSYY()
@@ -124,6 +158,8 @@ public class mainUIEventHandle : MonoBehaviour
             SLTGameobject.SetActive(true);
         //  Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/YiJQD.tpvr,0");
         PopUI.bPop = false;
+
+        CloseZNCM();
     }
 
     public void OnTCXT()
@@ -147,6 +183,8 @@ public class mainUIEventHandle : MonoBehaviour
         //Animation animation = this.transform.parent.parent.gameObject.GetComponent<Animation> ();
         //animation.Play ();
         Debug.Log("ONFHDT");
+
+        CloseZNCM();
     }
 
     public static void VrCamera(bool ena)

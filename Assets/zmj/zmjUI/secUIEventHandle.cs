@@ -42,6 +42,8 @@ public class secUIEventHandle : MonoBehaviour
             SLTGameobject.SetActive(true);
         Debug.Log("OnYDGJ");
         Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/YDGJ.tpvr,0");
+
+        mainUIEventHandle.sin.CloseZNCM();
     }
 
     public void OnRYDW()
@@ -55,6 +57,8 @@ public class secUIEventHandle : MonoBehaviour
         }
         Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/RYDW.tpvr,0");
         Debug.Log("OnRYDW");
+
+        mainUIEventHandle.sin.CloseZNCM();
     }
 
     public void OnFHZCD()
@@ -78,6 +82,8 @@ public class secUIEventHandle : MonoBehaviour
         if (cameraRig != null && ZTDZgameobject != null)
             cameraRig.transform.position = ZTDZgameobject.transform.position;
         mainUIEventHandle.SetZHDT_XZCFColoder(false);
+
+        mainUIEventHandle.sin.CloseZNCM();
     }
 
     public void OnJYGM()
@@ -94,6 +100,7 @@ public class secUIEventHandle : MonoBehaviour
         }
 
         Debug.Log("OnJYGM");
+        mainUIEventHandle.sin.CloseZNCM();
     }
 
 
@@ -109,6 +116,8 @@ public class secUIEventHandle : MonoBehaviour
         Debug.Log("OnYJQD");
         Training.TrainingManager.ExecuteScript("LoadScene,./课程/科目1/场景/YiJQD.tpvr,0");
         StartCoroutine(Drump());
+
+        mainUIEventHandle.sin.CloseZNCM();
     }
 
     IEnumerator Drump()

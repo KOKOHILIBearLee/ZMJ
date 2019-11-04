@@ -60,6 +60,8 @@ public class childAnimManager : MonoBehaviour {
 
         StartCoroutine(Delay());
         InitHolder(new Vector2(16, maxNum), holderArray);
+        m = 53;
+        n = 47;
     }
 
     IEnumerator Delay()
@@ -92,8 +94,8 @@ public class childAnimManager : MonoBehaviour {
 
     }
 
-    int m = 53;
-    int n = 47;
+    int m ;
+    int n ;
     void Step4(object obj)
     {
         if (n == 49)
